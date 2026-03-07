@@ -1,15 +1,50 @@
 import CardComponent from "./Component/Card";
 import { products } from "./array";
 import "./Component/card.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CartDrawer from "./Component/CartDrawer";
 
 export default function App() {
 
   const brands = ["All", ...new Set(products.map(p => p.brand))];
 
-  const [cartItems, setCartItems] = useState([]);
-  const [wishlistItems, setWishlistItems] = useState([]);
+  const [cartItems, setCartItems] = useState(
+      ()=>{
+             const savedItem= localStorage.getItem("techstore-item");
+             if(savedItem){
+                   try {
+                             return JSON.parse(savedItem);
+                   } catch (error) {
+                         console.log("problem!!",error);
+                   }
+             }
+             return [];
+      }
+  );
+
+  useEffect(
+    ()=>{
+            localStorage.setItem("techstore-item",JSON.stringify(cartItems));
+    },[cartItems]
+  );
+  const [wishlistItems, setWishlistItems] = useState(()=>{
+    const whishlist=localStorage.getItem("wishlist")
+              if(whishlist){
+                 try{
+                   return JSON.parse(whishlist);
+              }
+              catch(error){
+                   console.log("problem!!!",error);
+              }
+            }
+              return [];
+  }
+  );
+  useEffect(()=>{
+        localStorage.setItem("wishlist",JSON.stringify(wishlistItems));
+
+  },[wishlistItems]);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [sortBy, setSortBy] = useState("");
